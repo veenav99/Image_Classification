@@ -60,14 +60,14 @@ def train( args , model , device , train_loader , optimizer , epoch ):
                 break
 
 
-def test( model, device, test_loader ): #calculate if the models prediction is correct or not (if is correct, can increase the accuracy) #the final accuracy comes from this test function
+def test( model, device, test_loader ):
     model.eval()
     test_loss = 0
     correct = 0
 
     with torch.no_grad(): #we dont want to update the parameters of the model, so this keeps everything in place
 
-        for data, target in test_loader: #test_loader = imagine we have a total of 60,000 images, we use 50,000 to be trained, we left 10,000 to be tested. testloader has those 10,000 images 
+        for data, target in test_loader:
             data, target = data.to( device ) , target.to( device )
             output = model( data )
 
@@ -109,10 +109,10 @@ def main():
     elif use_mps:
         device = torch.device( "mps" )
     else:
-        device = torch.device( "cpu" ) #now can only use the cpu
+        device = torch.device( "cpu" ) 
 
     train_kwargs = { 'batch_size': args.batch_size } #kwargs = parameter (here, line 74 we defined the batch_size)
-    test_kwargs = { 'batch_size': args.test_batch_size } #here we test the batch_size
+    test_kwargs = { 'batch_size': args.test_batch_size } 
 
     if use_cuda:
 
@@ -121,10 +121,10 @@ def main():
         train_kwargs.update( cuda_kwargs )
         test_kwargs.update( cuda_kwargs )
 
-    transform = transforms.Compose([ #transforms = transform the original MNIST image to the values from 0 - 1(need to compress the values)
-        transforms.ToTensor(), #compresses the values (i think)
-        transforms.Normalize( ( 0.1307, ) , ( 0.3081, ) ) #wants to transfer the values from 0-1 -> from the  -0 to 0.5 (so it transforms the values)
-        ]) # (min , variance) (MAYBE)
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize( ( 0.1307, ) , ( 0.3081, ) ) 
+        ]) 
     
     dataset1 = datasets.MNIST( '../data' , train = True , download = True , transform = transform )#they defined the training dataset!! (can see this in the parameters) (training has 50,000 images)
                        
@@ -140,13 +140,13 @@ def main():
 
     for epoch in range( 1 , args.epochs + 1 ): #from line 133-136, they define the training step and the test step
 
-        train( args , model , device , train_loader , optimizer , epoch ) #for each epoch, use the whole training dataset to train the model and then you need to evaluate the performance of the model  
+        train( args , model , device , train_loader , optimizer , epoch )  
         test( model , device , test_loader )
-        scheduler.step() #then you adjust your Learning Rate by scheduler.step (this defines they gradually decrease of the Learning Rate) ex= so at epoch 0, the LR is 1, and epoch 1, the LR is 0.8 (this is the scheduler's doing)
+        scheduler.step() 
 
-    if args.save_model: #save as you command
+    if args.save_model: 
 
         torch.save( model.state_dict() , "mnist_cnn.pt" )
 
-if __name__ == '__main__': # if you input the command python main.py, it will run the main function
+if __name__ == '__main__': 
     main()
